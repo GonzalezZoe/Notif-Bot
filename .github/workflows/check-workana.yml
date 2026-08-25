@@ -1,3 +1,4 @@
+# Revisa Workana cada 15 minutos y avisa por email si hay trabajos nuevos de Shopify.
 name: Check Workana for Shopify jobs
 
 on:
