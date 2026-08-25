@@ -1,0 +1,52 @@
+name: Check Workana for Shopify jobs
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: check-workana
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run check
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        run: npm run check
+
+      - name: Commit updated state
+        run: |
+          if ! git diff --quiet -- state/seen.json; then
+            git config user.name "workana-shopify-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add state/seen.json
+            git commit -m "chore: update seen jobs state [skip ci]"
+            git push
+          else
+            echo "No changes to state/seen.json"
+          fi

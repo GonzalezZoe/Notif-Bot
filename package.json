@@ -1,0 +1,14 @@
+{
+  "name": "workana-shopify-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Revisa Workana en busca de trabajos de Shopify y avisa por email cuando aparecen nuevos.",
+  "type": "commonjs",
+  "scripts": {
+    "check": "node scripts/check-workana.js"
+  },
+  "dependencies": {
+    "nodemailer": "^9.0.5",
+    "playwright": "^1.47.0"
+  }
+}
